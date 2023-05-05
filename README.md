@@ -1,2 +1,7 @@
-# ta-draw-style
-Blender tech art: draw-style images
+# TA: Draw style
+
+Work in progress...
+
+Blender tech art: draw-style images.
+
+![](example.png)
