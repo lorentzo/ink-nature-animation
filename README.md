@@ -1,4 +1,4 @@
-# TA: Draw style
+# Tech-Art: Draw style
 
 Work in progress...
 
