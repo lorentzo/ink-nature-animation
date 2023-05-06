@@ -85,7 +85,7 @@ def main():
             # For each polygon create mesh containing the same edges.
             polygon_edges_mesh_obj = create_edge_mesh_from_polygon(base_obj, polygon)
             # For each created polygon edges, create curve.
-            for i in range(3):
+            for i in range(2):
                 edges_cpy = copy_obj(polygon_edges_mesh_obj)
                 # Convert created mesh to curve.
                 curve = convert_mesh_to_curve(edges_cpy, curve_bevel_depth=0.01, curve_n_subdiv=10) # TODO: randomize
