@@ -1,11 +1,9 @@
 
+# Blender 3.5.1.
+
 import bpy
 import mathutils
 import bmesh
-
-# Enhance freestyle
-# store in collections
-# draw style on faces, not only edges.
 
 def select_activate_only(objects=[]):
     for obj in bpy.data.objects:
@@ -77,7 +75,10 @@ def create_edge_mesh_from_polygon(base_obj: bpy.types.Object, polygon: bpy.types
     return obj_mesh
 
 def main():
-
+    """
+        Given collection of mesh objects, this script for each mesh,
+        creates displaced splines around each mesh polygon.
+    """
     # Apply on all objects in collection.
     for base_obj in bpy.data.collections['bobj'].all_objects:
         # For each base object face create spline.

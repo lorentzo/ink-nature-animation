@@ -16,3 +16,4 @@ Faces rendering:
 ![](example2.png)
 ![](example3.png)
 ![](example4.png)
+![](example5.png)
