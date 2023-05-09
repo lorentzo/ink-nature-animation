@@ -13,7 +13,7 @@ def copy_obj(obj):
     obj_cpy = obj.copy()
     obj_cpy.data = obj.data.copy()
     obj_cpy.animation_data_clear()
-    bpy.context.collection.objects.link(obj_cpy)
+    bpy.context.collection.objects.link(obj_cpy) # TODO: link to user-specified collection
     return obj_cpy
 
 def animate_curve_growth(curve, frame_start, frame_end, growth_factor_end):
@@ -40,9 +40,10 @@ def main():
     translation_factor = 3
     scale_factor = 2
     frame_start = 0
-    frame_end = 60
+    frame_end = 200
     curve_bevel_min_max = [0.01, 0.1]
-    for base_curve in bpy.data.collections['spline_grass'].all_objects:
+    target_collection = "grass1_guides"
+    for base_curve in bpy.data.collections[target_collection].all_objects:
         for i in range(n_copies_per_base_curve):
             # Create a copy.
             curve_cpy = copy_obj(base_curve)

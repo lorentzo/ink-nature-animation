@@ -43,6 +43,7 @@ def perturb_curve(curve_obj, perturb_scale=1.0, perturb_strength=1.0, n_octaves=
             point.co = (new_point_co[0], new_point_co[1], new_point_co[2], point.co[3]) # Note: https://blender.stackexchange.com/questions/220812/what-is-the-4th-coordinate-of-spline-points
     return curve_obj
 
+# TODO: move to collection
 def convert_mesh_to_curve(mesh_obj, curve_bevel_depth=0.01, curve_n_subdiv=0):
     select_activate_only([mesh_obj])
     bpy.ops.object.convert(target='CURVE') # creates POLY by default
@@ -79,8 +80,9 @@ def main():
         Given collection of mesh objects, this script for each mesh,
         creates displaced splines around each mesh polygon.
     """
+    base_collection = "crown"
     # Apply on all objects in collection.
-    for base_obj in bpy.data.collections['bobj'].all_objects:
+    for base_obj in bpy.data.collections[base_collection].all_objects:
         # For each base object face create spline.
         for polygon in base_obj.data.polygons:
             # For each polygon create mesh containing the same edges.
@@ -98,19 +100,3 @@ def main():
 #
 if __name__ == "__main__":
     main()
-
-
-
-
-    
-
-    
-
-
-
-
-
-
-
-
-
