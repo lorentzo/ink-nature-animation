@@ -16,19 +16,31 @@ def copy_obj(obj):
     bpy.context.collection.objects.link(obj_cpy) # TODO: link to user-specified collection
     return obj_cpy
 
-def animate_curve_growth(curve, frame_start, frame_end, growth_factor_end):
+def animate_curve_growth(curve, frame_start, frame_end, growth_factor_end, start_growth):
     curve.data.bevel_factor_end = 0
-    curve.data.bevel_factor_start = 0
+    curve.data.bevel_factor_start = start_growth
     curve.data.keyframe_insert(data_path="bevel_factor_end", frame=frame_start)
     curve.data.keyframe_insert(data_path="bevel_factor_start", frame=frame_start)
     curve.data.bevel_factor_start = growth_factor_end
     curve.data.keyframe_insert(data_path="bevel_factor_start", frame=frame_end)
 
-def animate_curve_thickness(curve, frame_start, frame_end, bevel_min, bevel_max):
-    curve.data.bevel_depth = 0.0
+def animate_curve_thickness(curve, frame_start, frame_end, thickness_min, thickness_max, start_thickness=0.0):
+    curve.data.bevel_depth = start_thickness
     curve.data.keyframe_insert(data_path="bevel_depth", frame=frame_start)
-    curve.data.bevel_depth = lerp(mathutils.noise.random(), bevel_min, bevel_max)
+    curve.data.bevel_depth = lerp(mathutils.noise.random(), thickness_min, thickness_max)
     curve.data.keyframe_insert(data_path="bevel_depth", frame=frame_end)
+
+# https://behreajj.medium.com/scripting-curves-in-blender-with-python-c487097efd13
+def set_animation_fcurve(base_object, option='LINEAR'):
+    fcurves = base_object.data.animation_data.action.fcurves
+    for fcurve in fcurves:
+        for kf in fcurve.keyframe_points:
+            # Options: ['CONSTANT', 'LINEAR', 'BEZIER', 'SINE',
+            # 'QUAD', 'CUBIC', 'QUART', 'QUINT', 'EXPO', 'CIRC',
+            # 'BACK', 'BOUNCE', 'ELASTIC']
+            kf.interpolation = option
+            # Options: ['AUTO', 'EASE_IN', 'EASE_OUT', 'EASE_IN_OUT']
+            kf.easing = 'AUTO'
 
 def main():
     """
@@ -36,13 +48,15 @@ def main():
         creates randomized instances and animates their growth.
     """
     # Apply on all objects in collection.
-    n_copies_per_base_curve = 10
-    translation_factor = 3
-    scale_factor = 2
+    n_copies_per_base_curve = 30
+    translation_factor = 5
+    scale_factor = 3
     frame_start = 0
     frame_end = 200
-    curve_bevel_min_max = [0.01, 0.1]
+    curve_thickness_min_max = [0.01, 0.1]
     target_collection = "grass1_guides"
+    start_thickness = 0.01
+    start_growth = 0.1
     for base_curve in bpy.data.collections[target_collection].all_objects:
         for i in range(n_copies_per_base_curve):
             # Create a copy.
@@ -61,9 +75,12 @@ def main():
             curve_cpy.scale[1] = rand_scale
             curve_cpy.scale[2] = rand_scale
             # Animate curve growth.
-            animate_curve_growth(curve_cpy, frame_start, frame_end, 1.0)
+            growth_factor_end = 1.0
+            animate_curve_growth(curve_cpy, frame_start, frame_end, growth_factor_end, start_growth)
             # Animate curve bevel.
-            animate_curve_thickness(curve_cpy, frame_start, frame_end, curve_bevel_min_max[0], curve_bevel_min_max[1])
+            animate_curve_thickness(curve_cpy, frame_start, frame_end, curve_thickness_min_max[0], curve_thickness_min_max[1], start_thickness)
+            # Interpolation.
+            set_animation_fcurve(curve_cpy)
             # Add cube at the end.
             """
             curve_type = curve_cpy.data.splines[0].type
