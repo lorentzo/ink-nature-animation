@@ -13,11 +13,24 @@ def select_activate_only(objects=[]):
         obj.select_set(True)
         bpy.context.view_layer.objects.active = obj
 
-def copy_obj(obj):
+# https://blender.stackexchange.com/questions/220072/check-using-name-if-a-collection-exists-in-blend-is-linked-to-scene
+def create_collection_if_not_exists(collection_name):
+    if collection_name not in bpy.data.collections:
+        new_collection = bpy.data.collections.new(collection_name)
+        bpy.context.scene.collection.children.link(new_collection) #Creates a new collection
+
+def add_object_to_collection(base_object, collection_name="collection"):
+    create_collection_if_not_exists(collection_name)
+    bpy.data.collections[collection_name].objects.link(base_object)
+
+def copy_obj(obj, collection_name):
     obj_cpy = obj.copy()
     obj_cpy.data = obj.data.copy()
     obj_cpy.animation_data_clear()
-    bpy.context.collection.objects.link(obj_cpy)
+    if collection_name == None:
+        bpy.context.collection.objects.link(obj_cpy)
+    else:
+        add_object_to_collection(obj_cpy, collection_name)
     return obj_cpy
 
 def perturb_curve(curve_obj, perturb_scale=1.0, perturb_strength=1.0, n_octaves=1, amplitude_scale=1.0, frequency_scale=1.0):
@@ -55,7 +68,7 @@ def convert_mesh_to_curve(mesh_obj, curve_bevel_depth=0.01, curve_n_subdiv=0):
     bpy.ops.object.editmode_toggle()
     return curve
 
-def create_edge_mesh_from_polygon(base_obj: bpy.types.Object, polygon: bpy.types.MeshPolygon):
+def create_edge_mesh_from_polygon(base_obj: bpy.types.Object, polygon: bpy.types.MeshPolygon, collection_name=None):
     """
         Take mesh object and its polygon, create mesh containing only polygon edges.
         Polygon: https://docs.blender.org/api/current/bpy.types.MeshPolygon.html#bpy.types.MeshPolygon
@@ -70,7 +83,10 @@ def create_edge_mesh_from_polygon(base_obj: bpy.types.Object, polygon: bpy.types
     bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-4)
     mesh = bpy.data.meshes.new("mesh")
     obj_mesh = bpy.data.objects.new("obj", mesh)
-    bpy.context.collection.objects.link(obj_mesh)
+    if collection_name == None:
+        bpy.context.collection.objects.link(obj_mesh)
+    else:
+        add_object_to_collection(obj_mesh, collection_name)
     bm.to_mesh(mesh)
     bm.free()
     return obj_mesh
@@ -80,20 +96,21 @@ def main():
         Given collection of mesh objects, this script for each mesh,
         creates displaced splines around each mesh polygon.
     """
-    base_collection = "crown"
-    # Apply on all objects in collection.
-    for base_obj in bpy.data.collections[base_collection].all_objects:
-        # For each base object face create spline.
-        for polygon in base_obj.data.polygons:
-            # For each polygon create mesh containing the same edges.
-            polygon_edges_mesh_obj = create_edge_mesh_from_polygon(base_obj, polygon)
-            # For each created polygon edges, create curve.
-            for i in range(1):
-                edges_cpy = copy_obj(polygon_edges_mesh_obj)
-                # Convert created mesh to curve.
-                curve = convert_mesh_to_curve(edges_cpy, curve_bevel_depth=0.01, curve_n_subdiv=10) # TODO: randomize
-                # Pertub curve.
-                perturb_curve(curve, perturb_scale=5.0, perturb_strength=0.2, n_octaves=1, amplitude_scale=0.3, frequency_scale=1.0)
+    src_dest_collections = [("crown", "crown_generated_curve_edges"), ("pillars_base", "pillars_generated"), ("tree_hill_base", "tree_hill_generated_curves")]
+    for src_dest_collection in src_dest_collections:
+        # Apply on all objects in collection.
+        for base_obj in bpy.data.collections[src_dest_collection[0]].all_objects:
+            # For each base object face create spline.
+            for polygon in base_obj.data.polygons:
+                # For each polygon create mesh containing the same edges.
+                polygon_edges_mesh_obj = create_edge_mesh_from_polygon(base_obj, polygon, src_dest_collection[1])
+                # For each created polygon edges, create curve.
+                for i in range(1):
+                    edges_cpy = copy_obj(polygon_edges_mesh_obj, src_dest_collection[1])
+                    # Convert created mesh to curve.
+                    curve = convert_mesh_to_curve(edges_cpy, curve_bevel_depth=0.01, curve_n_subdiv=10) # TODO: randomize
+                    # Pertub curve.
+                    perturb_curve(curve, perturb_scale=5.0, perturb_strength=0.2, n_octaves=1, amplitude_scale=0.3, frequency_scale=1.0)
 
 #
 # Script entry point.

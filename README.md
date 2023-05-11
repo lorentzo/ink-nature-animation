@@ -19,3 +19,4 @@ Faces rendering:
 ![](example5.png)
 ![](example6.png)
 ![](example7.png)
+![](example8.png)
