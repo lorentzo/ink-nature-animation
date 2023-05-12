@@ -110,7 +110,10 @@ def main():
                     # Convert created mesh to curve.
                     curve = convert_mesh_to_curve(edges_cpy, curve_bevel_depth=0.01, curve_n_subdiv=10) # TODO: randomize
                     # Pertub curve.
-                    perturb_curve(curve, perturb_scale=5.0, perturb_strength=0.2, n_octaves=1, amplitude_scale=0.3, frequency_scale=1.0)
+                    perturb_curve(curve, perturb_scale=5.0, perturb_strength=0.4, n_octaves=1, amplitude_scale=0.5, frequency_scale=1.0)
+                    # Convert to mesh.
+                    select_activate_only([curve])
+                    bpy.ops.object.convert(target='MESH')
 
 #
 # Script entry point.

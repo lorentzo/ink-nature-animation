@@ -9,7 +9,7 @@ import bmesh
 def lerp(t, a, b):
     return (1.0 - t) * a + t * b
 
-def copy_obj(obj):
+def copy_obj(obj, collection_name):
     obj_cpy = obj.copy()
     obj_cpy.data = obj.data.copy()
     obj_cpy.animation_data_clear()
