@@ -5,6 +5,10 @@ import bpy
 import mathutils
 import bmesh
 
+# Interpolate [a,b] using factor t.
+def lerp(t, a, b):
+    return (1.0 - t) * a + t * b
+
 def select_activate_only(objects=[]):
     for obj in bpy.data.objects:
         obj.select_set(False)
@@ -108,7 +112,8 @@ def main():
                 for i in range(1):
                     edges_cpy = copy_obj(polygon_edges_mesh_obj, src_dest_collection[1])
                     # Convert created mesh to curve.
-                    curve = convert_mesh_to_curve(edges_cpy, curve_bevel_depth=0.01, curve_n_subdiv=10) # TODO: randomize
+                    curr_bevel = lerp(0.02, 0.05, mathutils.noise.random())
+                    curve = convert_mesh_to_curve(edges_cpy, curve_bevel_depth=curr_bevel, curve_n_subdiv=10) # TODO: randomize
                     # Pertub curve.
                     perturb_curve(curve, perturb_scale=5.0, perturb_strength=0.4, n_octaves=1, amplitude_scale=0.5, frequency_scale=1.0)
                     # Convert to mesh.

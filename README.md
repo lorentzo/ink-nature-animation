@@ -8,6 +8,7 @@ Blender tech art: draw-style images. Goal:
 Edges rendering:
 * Procedural splines via Blender Python API: https://docs.blender.org/api/current/index.html
 * Blender Freestyle renderer: https://docs.blender.org/manual/en/latest/render/freestyle/index.html
+* Blender compositor: https://docs.blender.org/manual/en/latest/compositing/types/filter/filter_node.html
 
 Faces rendering:
 * Hatching shaders: https://www.youtube.com/watch?v=2ZR5XIjBmho
@@ -21,3 +22,4 @@ Faces rendering:
 ![](example7.png)
 ![](example8.png)
 ![](example9.png)
+![](example10.png)

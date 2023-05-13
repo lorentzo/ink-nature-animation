@@ -9,11 +9,25 @@ import bmesh
 def lerp(t, a, b):
     return (1.0 - t) * a + t * b
 
-def copy_obj(obj):
+
+# https://blender.stackexchange.com/questions/220072/check-using-name-if-a-collection-exists-in-blend-is-linked-to-scene
+def create_collection_if_not_exists(collection_name):
+    if collection_name not in bpy.data.collections:
+        new_collection = bpy.data.collections.new(collection_name)
+        bpy.context.scene.collection.children.link(new_collection) #Creates a new collection
+
+def add_object_to_collection(base_object, collection_name="collection"):
+    create_collection_if_not_exists(collection_name)
+    bpy.data.collections[collection_name].objects.link(base_object)
+
+def copy_obj(obj, collection_name):
     obj_cpy = obj.copy()
     obj_cpy.data = obj.data.copy()
     obj_cpy.animation_data_clear()
-    bpy.context.collection.objects.link(obj_cpy) # TODO: link to user-specified collection
+    if collection_name == None:
+        bpy.context.collection.objects.link(obj_cpy)
+    else:
+        add_object_to_collection(obj_cpy, collection_name)
     return obj_cpy
 
 def animate_curve_growth(curve, frame_start, frame_end, growth_factor_end, start_growth):
@@ -55,12 +69,13 @@ def main():
     frame_end = 200
     curve_thickness_min_max = [0.01, 0.1]
     target_collection = "grass1_guides"
+    dest_collection = "grass1_generated"
     start_thickness = 0.01
     start_growth = 0.1
     for base_curve in bpy.data.collections[target_collection].all_objects:
         for i in range(n_copies_per_base_curve):
             # Create a copy.
-            curve_cpy = copy_obj(base_curve)
+            curve_cpy = copy_obj(base_curve, dest_collection)
             # Add bevel.
             curve_cpy.data.bevel_depth = mathutils.noise.random() * 0.01
             # Random rotation around Z axis.
