@@ -100,7 +100,7 @@ def main():
         Given collection of mesh objects, this script for each mesh,
         creates displaced splines around each mesh polygon.
     """
-    src_dest_collections = [("crown", "crown_generated_curve_edges"), ("pillars_base", "pillars_generated"), ("tree_hill_base", "tree_hill_generated_curves")]
+    src_dest_collections = [("crown", "crown_generated_curve_edges")] # , ("pillars_base", "pillars_generated"), ("tree_hill_base", "tree_hill_generated_curves")
     for src_dest_collection in src_dest_collections:
         # Apply on all objects in collection.
         for base_obj in bpy.data.collections[src_dest_collection[0]].all_objects:

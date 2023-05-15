@@ -85,7 +85,7 @@ def main():
     start_growth = 0.1
     n_copies_per_base_curve = 10
     frame_start = 0
-    frame_end = 200
+    frame_end = 275
     curve_thickness_min_max = [0.1, 0.2]
     start_thickness = 0.01
     for base_curve in bpy.data.collections[src_collection].all_objects:
