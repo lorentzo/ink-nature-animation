@@ -1,6 +1,6 @@
-# Tech-Art: Draw style
+# Tech-Art And Animation
 
-## Blender tech art: draw-style animation. Goal:
+## Blender tech art draw-style and animation:
 * Create procedural animation
 * Introduce imperfections into rendered images
 
